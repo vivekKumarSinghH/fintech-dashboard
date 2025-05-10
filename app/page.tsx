@@ -11,8 +11,18 @@ import { ProductPerformance } from "@/components/dashboard/product-performance"
 import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { UserActivity } from "@/components/dashboard/user-activity"
 import type { KPIData, RevenueData, CustomerData, RegionData, ProductData } from "@/types"
+import { useState } from "react"
 
 export default function DashboardPage() {
+  // Get animationsEnabled from localStorage to maintain consistency
+  const [animationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("animationsEnabled")
+      return saved !== null ? saved === "true" : true
+    }
+    return true
+  })
+
   // KPI data
   const kpiData: KPIData[] = [
     {
@@ -130,7 +140,7 @@ export default function DashboardPage() {
             change={kpi.change}
             trend={kpi.trend}
             icon={kpi.icon}
-            animationsEnabled={true}
+            animationsEnabled={animationsEnabled}
           />
         ))}
       </div>
@@ -143,7 +153,7 @@ export default function DashboardPage() {
             <CardDescription>Actual vs forecast revenue for the year</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <RevenueForecast data={revenueData} animationsEnabled={true} />
+            <RevenueForecast data={revenueData} animationsEnabled={animationsEnabled} />
           </CardContent>
         </Card>
 
@@ -153,7 +163,7 @@ export default function DashboardPage() {
             <CardDescription>New vs returning customers</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <CustomerGrowth data={customerData} animationsEnabled={true} />
+            <CustomerGrowth data={customerData} animationsEnabled={animationsEnabled} />
           </CardContent>
         </Card>
       </div>
@@ -168,7 +178,7 @@ export default function DashboardPage() {
             change={kpi.change}
             trend={kpi.trend}
             icon={kpi.icon}
-            animationsEnabled={true}
+            animationsEnabled={animationsEnabled}
           />
         ))}
       </div>
@@ -181,7 +191,7 @@ export default function DashboardPage() {
             <CardDescription>User distribution by region</CardDescription>
           </CardHeader>
           <CardContent>
-            <GeographicDistribution data={regionData} animationsEnabled={true} />
+            <GeographicDistribution data={regionData} animationsEnabled={animationsEnabled} />
           </CardContent>
         </Card>
 
@@ -191,7 +201,7 @@ export default function DashboardPage() {
             <CardDescription>Sales and revenue by product</CardDescription>
           </CardHeader>
           <CardContent>
-            <ProductPerformance data={productData} animationsEnabled={true} />
+            <ProductPerformance data={productData} animationsEnabled={animationsEnabled} />
           </CardContent>
         </Card>
       </div>
@@ -204,7 +214,7 @@ export default function DashboardPage() {
             <CardDescription>Latest financial activities</CardDescription>
           </CardHeader>
           <CardContent>
-            <RecentTransactions animationsEnabled={true} />
+            <RecentTransactions animationsEnabled={animationsEnabled} />
           </CardContent>
           <CardFooter className="border-t border-border pt-4">
             <Button variant="outline" className="w-full">
@@ -226,7 +236,7 @@ export default function DashboardPage() {
             </select>
           </CardHeader>
           <CardContent>
-            <UserActivity animationsEnabled={true} />
+            <UserActivity animationsEnabled={animationsEnabled} />
           </CardContent>
         </Card>
       </div>

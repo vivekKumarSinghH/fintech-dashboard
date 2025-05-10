@@ -13,7 +13,14 @@ export default function UserManagementPage() {
   const [filterRole, setFilterRole] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
-  const animationsEnabled = true
+  // Get animationsEnabled from localStorage to maintain consistency
+  const [animationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("animationsEnabled")
+      return saved !== null ? saved === "true" : true
+    }
+    return true
+  })
 
   // Sample user data
   const allUsers: UserData[] = [
