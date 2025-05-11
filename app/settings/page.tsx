@@ -62,7 +62,7 @@ export default function SettingsPage() {
           <CardTitle className="text-xl font-outfit">Settings</CardTitle>
           <CardDescription>Manage your account settings and preferences</CardDescription>
         </CardHeader>
-        <div className="border-b border-border">
+        <div className="border-b border-border mb-3">
           <div className="flex overflow-x-auto">
             <button
               className={`px-4 py-2 text-sm font-medium border-b-2 ${
