@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Key,
   Plus,
@@ -21,14 +28,19 @@ import {
   CheckCircle2,
   XCircle,
   Download,
-} from "lucide-react"
-import type { APIKeyData, APIUsageData } from "@/types"
-import { motion } from "framer-motion"
-import { StatsCard } from "@/components/dashboard/stats-card"
-import { CreateAPIKeyModal } from "@/components/modals/create-api-key-modal"
-import { ExportDataModal } from "@/components/modals/export-data-modal"
-import { useToast } from "@/hooks/use-toast"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+} from "lucide-react";
+import type { APIKeyData, APIUsageData } from "@/types";
+import { motion } from "framer-motion";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import { CreateAPIKeyModal } from "@/components/modals/create-api-key-modal";
+import { ExportDataModal } from "@/components/modals/export-data-modal";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Mock data
 const apiKeys: APIKeyData[] = [
@@ -59,7 +71,7 @@ const apiKeys: APIKeyData[] = [
     status: "inactive",
     permissions: ["read"],
   },
-]
+];
 
 const apiUsage: APIUsageData[] = [
   { date: "2023-10-22", requests: 1250, errors: 12, latency: 145 },
@@ -69,29 +81,29 @@ const apiUsage: APIUsageData[] = [
   { date: "2023-10-26", requests: 1680, errors: 14, latency: 152 },
   { date: "2023-10-27", requests: 1420, errors: 9, latency: 138 },
   { date: "2023-10-28", requests: 1350, errors: 7, latency: 130 },
-]
+];
 
 export default function APIManagementPage() {
-  const { toast } = useToast()
-  const [activeTab, setActiveTab] = useState("keys")
-  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
-  const [createKeyOpen, setCreateKeyOpen] = useState(false)
-  const [exportOpen, setExportOpen] = useState(false)
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("keys");
+  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
+  const [createKeyOpen, setCreateKeyOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   // Get animationsEnabled from localStorage to maintain consistency
   const [animationsEnabled] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("animationsEnabled")
-      return saved !== null ? saved === "true" : true
+      const saved = localStorage.getItem("animationsEnabled");
+      return saved !== null ? saved === "true" : true;
     }
-    return true
-  })
+    return true;
+  });
 
   const toggleKeyVisibility = (keyId: string) => {
     setShowKeys((prev) => ({
       ...prev,
       [keyId]: !prev[keyId],
-    }))
-  }
+    }));
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard
@@ -101,50 +113,50 @@ export default function APIManagementPage() {
           title: "Copied to Clipboard",
           description: "API key has been copied to clipboard",
           duration: 2000,
-        })
+        });
       })
       .catch((err) => {
-        console.error("Failed to copy: ", err)
+        console.error("Failed to copy: ", err);
         toast({
           title: "Failed to Copy",
           description: "Could not copy API key to clipboard",
           variant: "destructive",
           duration: 2000,
-        })
-      })
-  }
+        });
+      });
+  };
 
   const handleRotateKey = (keyId: string) => {
     toast({
       title: "Key Rotation Initiated",
       description: "Your API key is being rotated. This may take a moment.",
       duration: 2000,
-    })
-  }
+    });
+  };
 
   const handleRevokeKey = (keyId: string) => {
     toast({
       title: "Key Revoked",
       description: "Your API key has been revoked and is no longer active.",
       duration: 2000,
-    })
-  }
+    });
+  };
 
   const handleRefresh = () => {
     toast({
       title: "Refreshing Data",
       description: "API usage data is being updated",
       duration: 2000,
-    })
-  }
+    });
+  };
 
   const handleSaveSettings = () => {
     toast({
       title: "Settings Saved",
       description: "Your API settings have been updated successfully",
       duration: 2000,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -154,7 +166,10 @@ export default function APIManagementPage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" onClick={() => window.open("#", "_blank")}>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open("#", "_blank")}
+                >
                   Documentation
                 </Button>
               </TooltipTrigger>
@@ -189,14 +204,23 @@ export default function APIManagementPage() {
         <StatsCard
           title="Daily Requests"
           value={apiUsage[apiUsage.length - 1].requests.toLocaleString()}
-          change={`${(((apiUsage[apiUsage.length - 1].requests - apiUsage[apiUsage.length - 2].requests) / apiUsage[apiUsage.length - 2].requests) * 100).toFixed(1)}% from yesterday`}
+          change={`${(
+            ((apiUsage[apiUsage.length - 1].requests -
+              apiUsage[apiUsage.length - 2].requests) /
+              apiUsage[apiUsage.length - 2].requests) *
+            100
+          ).toFixed(1)}% from yesterday`}
           trend="up"
           icon={BarChart}
           animationsEnabled={animationsEnabled}
         />
         <StatsCard
           title="Error Rate"
-          value={`${((apiUsage[apiUsage.length - 1].errors / apiUsage[apiUsage.length - 1].requests) * 100).toFixed(2)}%`}
+          value={`${(
+            (apiUsage[apiUsage.length - 1].errors /
+              apiUsage[apiUsage.length - 1].requests) *
+            100
+          ).toFixed(2)}%`}
           change={`${apiUsage[apiUsage.length - 1].errors} errors today`}
           trend={apiUsage[apiUsage.length - 1].errors > 10 ? "down" : "up"}
           icon={AlertTriangle}
@@ -205,15 +229,30 @@ export default function APIManagementPage() {
         <StatsCard
           title="Avg. Latency"
           value={`${apiUsage[apiUsage.length - 1].latency} ms`}
-          change={`${apiUsage[apiUsage.length - 1].latency < apiUsage[apiUsage.length - 2].latency ? "Decreased" : "Increased"} from yesterday`}
-          trend={apiUsage[apiUsage.length - 1].latency < apiUsage[apiUsage.length - 2].latency ? "up" : "down"}
+          change={`${
+            apiUsage[apiUsage.length - 1].latency <
+            apiUsage[apiUsage.length - 2].latency
+              ? "Decreased"
+              : "Increased"
+          } from yesterday`}
+          trend={
+            apiUsage[apiUsage.length - 1].latency <
+            apiUsage[apiUsage.length - 2].latency
+              ? "up"
+              : "down"
+          }
           icon={Clock}
           animationsEnabled={animationsEnabled}
         />
       </div>
 
       {/* Main Content */}
-      <Tabs defaultValue="keys" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        defaultValue="keys"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="keys">API Keys</TabsTrigger>
           <TabsTrigger value="usage">Usage Analytics</TabsTrigger>
@@ -225,12 +264,18 @@ export default function APIManagementPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Your API Keys</CardTitle>
-                <CardDescription>Manage your API keys for authentication</CardDescription>
+                <CardDescription>
+                  Manage your API keys for authentication
+                </CardDescription>
               </div>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setExportOpen(true)}
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       Export
                     </Button>
@@ -245,7 +290,9 @@ export default function APIManagementPage() {
                   <motion.div
                     key={apiKey.id}
                     initial={animationsEnabled ? { opacity: 0, y: 10 } : false}
-                    animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
+                    animate={
+                      animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }
+                    }
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
                     <Card>
@@ -254,15 +301,24 @@ export default function APIManagementPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium">{apiKey.name}</h3>
-                              <Badge variant={apiKey.status === "active" ? "default" : "secondary"}>
-                                {apiKey.status === "active" ? "Active" : "Inactive"}
+                              <Badge
+                                variant={
+                                  apiKey.status === "active"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {apiKey.status === "active"
+                                  ? "Active"
+                                  : "Inactive"}
                               </Badge>
                             </div>
                             <div className="flex items-center mt-2">
                               <div className="font-mono text-sm bg-secondary p-2 rounded flex items-center">
                                 {showKeys[apiKey.id]
                                   ? apiKey.key
-                                  : apiKey.key.substring(0, 10) + "••••••••••••••••••••"}
+                                  : apiKey.key.substring(0, 10) +
+                                    "••••••••••••••••••••"}
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -270,7 +326,9 @@ export default function APIManagementPage() {
                                         variant="ghost"
                                         size="sm"
                                         className="ml-2 h-6 w-6 p-0"
-                                        onClick={() => toggleKeyVisibility(apiKey.id)}
+                                        onClick={() =>
+                                          toggleKeyVisibility(apiKey.id)
+                                        }
                                       >
                                         {showKeys[apiKey.id] ? (
                                           <EyeOff className="h-4 w-4" />
@@ -279,7 +337,11 @@ export default function APIManagementPage() {
                                         )}
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>{showKeys[apiKey.id] ? "Hide key" : "Show key"}</TooltipContent>
+                                    <TooltipContent>
+                                      {showKeys[apiKey.id]
+                                        ? "Hide key"
+                                        : "Show key"}
+                                    </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
 
@@ -290,12 +352,16 @@ export default function APIManagementPage() {
                                         variant="ghost"
                                         size="sm"
                                         className="ml-1 h-6 w-6 p-0"
-                                        onClick={() => copyToClipboard(apiKey.key)}
+                                        onClick={() =>
+                                          copyToClipboard(apiKey.key)
+                                        }
                                       >
                                         <Copy className="h-4 w-4" />
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Copy to clipboard</TooltipContent>
+                                    <TooltipContent>
+                                      Copy to clipboard
+                                    </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
                               </div>
@@ -309,23 +375,35 @@ export default function APIManagementPage() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="outline" size="sm" onClick={() => handleRotateKey(apiKey.id)}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleRotateKey(apiKey.id)}
+                                  >
                                     <RefreshCw className="h-4 w-4 mr-2" />
                                     Rotate
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>Generate a new key and deprecate this one</TooltipContent>
+                                <TooltipContent>
+                                  Generate a new key and deprecate this one
+                                </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
 
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="destructive" size="sm" onClick={() => handleRevokeKey(apiKey.id)}>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleRevokeKey(apiKey.id)}
+                                  >
                                     Revoke
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>Permanently disable this API key</TooltipContent>
+                                <TooltipContent>
+                                  Permanently disable this API key
+                                </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           </div>
@@ -350,13 +428,19 @@ export default function APIManagementPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>API Usage Analytics</CardTitle>
-                <CardDescription>Monitor your API usage and performance</CardDescription>
+                <CardDescription>
+                  Monitor your API usage and performance
+                </CardDescription>
               </div>
               <div className="flex gap-2">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="sm" onClick={handleRefresh}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRefresh}
+                      >
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Refresh
                       </Button>
@@ -368,7 +452,11 @@ export default function APIManagementPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setExportOpen(true)}
+                      >
                         <Download className="h-4 w-4 mr-2" />
                         Export
                       </Button>
@@ -379,46 +467,52 @@ export default function APIManagementPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
-                <div className="w-full h-full flex flex-col">
-                  <div className="flex-1 relative">
-                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="none">
-                      {/* Requests line */}
-                      <path
-                        d={`M 0 ${300 - (apiUsage[0].requests / 2000) * 280} ${apiUsage
-                          .map((d, i) => {
-                            const x = (i / (apiUsage.length - 1)) * 500
-                            const y = 300 - (d.requests / 2000) * 280
-                            return `L ${x} ${y}`
-                          })
-                          .join(" ")}`}
-                        fill="none"
-                        stroke="#4f46e5"
-                        strokeWidth="3"
-                      />
+              <div className="w-full aspect-[5/3]">
+                <svg
+                  className="w-full h-full"
+                  viewBox="0 0 500 300"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  {/* Requests line */}
+                  <path
+                    d={`M 0 ${
+                      300 - (apiUsage[0].requests / 2000) * 280
+                    } ${apiUsage
+                      .map((d, i) => {
+                        const x = (i / (apiUsage.length - 1)) * 500;
+                        const y = 300 - (d.requests / 2000) * 280;
+                        return `L ${x} ${y}`;
+                      })
+                      .join(" ")}`}
+                    fill="none"
+                    stroke="#4f46e5"
+                    strokeWidth="3"
+                  />
 
-                      {/* Errors line */}
-                      <path
-                        d={`M 0 ${300 - (apiUsage[0].errors / 20) * 280} ${apiUsage
-                          .map((d, i) => {
-                            const x = (i / (apiUsage.length - 1)) * 500
-                            const y = 300 - (d.errors / 20) * 280
-                            return `L ${x} ${y}`
-                          })
-                          .join(" ")}`}
-                        fill="none"
-                        stroke="#ef4444"
-                        strokeWidth="3"
-                      />
-                    </svg>
-                  </div>
-                  <div className="h-6 flex justify-between">
-                    {apiUsage.map((d, i) => (
-                      <div key={i} className="text-xs text-muted-foreground">
-                        {new Date(d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      </div>
-                    ))}
-                  </div>
+                  {/* Errors line */}
+                  <path
+                    d={`M 0 ${300 - (apiUsage[0].errors / 20) * 280} ${apiUsage
+                      .map((d, i) => {
+                        const x = (i / (apiUsage.length - 1)) * 500;
+                        const y = 300 - (d.errors / 20) * 280;
+                        return `L ${x} ${y}`;
+                      })
+                      .join(" ")}`}
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="3"
+                  />
+                </svg>
+
+                <div className="h-6 flex justify-between">
+                  {apiUsage.map((d, i) => (
+                    <div key={i} className="text-xs text-muted-foreground">
+                      {new Date(d.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -440,7 +534,10 @@ export default function APIManagementPage() {
                     .slice(-5)
                     .reverse()
                     .map((usage, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-secondary/50 rounded-md">
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-3 bg-secondary/50 rounded-md"
+                      >
                         <div>
                           <div className="font-medium">
                             {new Date(usage.date).toLocaleDateString("en-US", {
@@ -455,7 +552,10 @@ export default function APIManagementPage() {
                         </div>
                         <div className="flex items-center">
                           {usage.errors > 10 ? (
-                            <Badge variant="destructive" className="flex items-center">
+                            <Badge
+                              variant="destructive"
+                              className="flex items-center"
+                            >
                               <XCircle className="h-3 w-3 mr-1" />
                               {usage.errors} errors
                             </Badge>
@@ -481,7 +581,9 @@ export default function APIManagementPage() {
           <Card>
             <CardHeader>
               <CardTitle>API Settings</CardTitle>
-              <CardDescription>Configure your API behavior and security settings</CardDescription>
+              <CardDescription>
+                Configure your API behavior and security settings
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -503,7 +605,9 @@ export default function APIManagementPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="ip-whitelist">IP Whitelisting</Label>
-                      <p className="text-sm text-muted-foreground">Restrict API access to specific IP addresses</p>
+                      <p className="text-sm text-muted-foreground">
+                        Restrict API access to specific IP addresses
+                      </p>
                     </div>
                     <Switch id="ip-whitelist" />
                   </div>
@@ -511,7 +615,9 @@ export default function APIManagementPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="webhook-signing">Webhook Signing</Label>
-                      <p className="text-sm text-muted-foreground">Sign webhook payloads for enhanced security</p>
+                      <p className="text-sm text-muted-foreground">
+                        Sign webhook payloads for enhanced security
+                      </p>
                     </div>
                     <Switch id="webhook-signing" defaultChecked />
                   </div>
@@ -519,7 +625,9 @@ export default function APIManagementPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="auto-rotate">Auto-rotate API keys</Label>
-                      <p className="text-sm text-muted-foreground">Automatically rotate API keys every 90 days</p>
+                      <p className="text-sm text-muted-foreground">
+                        Automatically rotate API keys every 90 days
+                      </p>
                     </div>
                     <Switch id="auto-rotate" />
                   </div>
@@ -562,7 +670,11 @@ export default function APIManagementPage() {
 
       {/* Modals */}
       <CreateAPIKeyModal open={createKeyOpen} onOpenChange={setCreateKeyOpen} />
-      <ExportDataModal open={exportOpen} onOpenChange={setExportOpen} dataType="api" />
+      <ExportDataModal
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        dataType="api"
+      />
     </div>
-  )
+  );
 }
