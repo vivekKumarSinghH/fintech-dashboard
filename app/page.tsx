@@ -9,9 +9,9 @@ import { ProductPerformance } from "@/components/dashboard/product-performance"
 import { UserActivity } from "@/components/dashboard/user-activity"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DollarSign, Users, CreditCard, Activity, ShoppingCart, Percent, Target, RefreshCw, Zap } from "lucide-react"
+import { DollarSign, Users, CreditCard, Activity } from "lucide-react"
 import { useState } from "react"
-import type { KPIData } from "@/types"
+import { revenueData, customerData, regionData, productData, statsCardsData } from "@/lib/data"
 
 export default function DashboardPage() {
   // Get animationsEnabled from localStorage to maintain consistency
@@ -23,111 +23,6 @@ export default function DashboardPage() {
     return true
   })
 
-  // KPI data
-  const kpiData: KPIData[] = [
-    {
-      title: "Total Revenue",
-      value: "$1,245,890",
-      change: "+18.7%",
-      trend: "up",
-      icon: DollarSign,
-    },
-    {
-      title: "Active Users",
-      value: "12,345",
-      change: "+15.3%",
-      trend: "up",
-      icon: Users,
-    },
-    {
-      title: "Transactions",
-      value: "48,592",
-      change: "+24.5%",
-      trend: "up",
-      icon: CreditCard,
-    },
-    {
-      title: "Avg. Order Value",
-      value: "$258",
-      change: "+12.2%",
-      trend: "up",
-      icon: ShoppingCart,
-    },
-    {
-      title: "Conversion Rate",
-      value: "3.8%",
-      change: "+0.5%",
-      trend: "up",
-      icon: Percent,
-    },
-    {
-      title: "Customer Acquisition",
-      value: "$42",
-      change: "-8.1%",
-      trend: "down",
-      icon: Target,
-    },
-    {
-      title: "Active Subscriptions",
-      value: "8,942",
-      change: "+5.3%",
-      trend: "up",
-      icon: RefreshCw,
-    },
-    {
-      title: "Churn Rate",
-      value: "2.1%",
-      change: "-0.3%",
-      trend: "up",
-      icon: Zap,
-    },
-  ]
-
-  // Revenue forecast data
-  const revenueData = [
-    { month: "Jan", actual: 120000, forecast: 110000 },
-    { month: "Feb", actual: 135000, forecast: 125000 },
-    { month: "Mar", actual: 140000, forecast: 145000 },
-    { month: "Apr", actual: 155000, forecast: 150000 },
-    { month: "May", actual: 165000, forecast: 160000 },
-    { month: "Jun", actual: 180000, forecast: 175000 },
-    { month: "Jul", actual: 190000, forecast: 185000 },
-    { month: "Aug", actual: 195000, forecast: 200000 },
-    { month: "Sep", actual: 0, forecast: 210000 },
-    { month: "Oct", actual: 0, forecast: 220000 },
-    { month: "Nov", actual: 0, forecast: 230000 },
-    { month: "Dec", actual: 0, forecast: 240000 },
-  ]
-
-  // Customer growth data
-  const customerData = [
-    { month: "Jan", new: 850, returning: 1200, churn: 120 },
-    { month: "Feb", new: 920, returning: 1250, churn: 115 },
-    { month: "Mar", new: 980, returning: 1300, churn: 130 },
-    { month: "Apr", new: 1050, returning: 1350, churn: 125 },
-    { month: "May", new: 1120, returning: 1400, churn: 140 },
-    { month: "Jun", new: 1200, returning: 1450, churn: 135 },
-    { month: "Jul", new: 1250, returning: 1500, churn: 145 },
-  ]
-
-  // Region data
-  const regionData = [
-    { name: "North America", value: 42, users: 4200 },
-    { name: "Europe", value: 28, users: 2800 },
-    { name: "Asia Pacific", value: 18, users: 1800 },
-    { name: "Latin America", value: 8, users: 800 },
-    { name: "Middle East", value: 4, users: 400 },
-  ]
-
-  // Product data
-  const productData = [
-    { name: "Premium Plan", sales: 1245, revenue: 124500, growth: 18.5 },
-    { name: "Standard Plan", sales: 2850, revenue: 142500, growth: 12.3 },
-    { name: "Basic Plan", sales: 5420, revenue: 108400, growth: 5.7 },
-    { name: "Add-on: Analytics", sales: 950, revenue: 47500, growth: 24.8 },
-    { name: "Add-on: Support", sales: 1820, revenue: 54600, growth: 15.2 },
-  ]
-
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -135,34 +30,34 @@ export default function DashboardPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total Revenue"
-          value="$45,231.89"
-          change="+20.1% from last month"
-          trend="up"
+          title={statsCardsData[0].title}
+          value={statsCardsData[0].value}
+          change={statsCardsData[0].change}
+          trend={statsCardsData[0].trend  as "up" | "down" | "neutral"}
           icon={DollarSign}
           animationsEnabled={animationsEnabled}
         />
         <StatsCard
-          title="New Customers"
-          value="2,350"
-          change="+180.1% from last month"
-          trend="up"
+          title={statsCardsData[1].title}
+          value={statsCardsData[1].value}
+          change={statsCardsData[1].change}
+          trend={statsCardsData[1].trend as "up" | "down" | "neutral"}
           icon={Users}
           animationsEnabled={animationsEnabled}
         />
         <StatsCard
-          title="Active Subscriptions"
-          value="1,200"
-          change="+19% from last month"
-          trend="up"
+          title={statsCardsData[2].title}
+          value={statsCardsData[2].value}
+          change={statsCardsData[2].change}
+          trend={statsCardsData[2].trend  as "up" | "down" | "neutral"}
           icon={CreditCard}
           animationsEnabled={animationsEnabled}
         />
         <StatsCard
-          title="Active Users"
-          value="573"
-          change="-2% from last month"
-          trend="down"
+          title={statsCardsData[3].title}
+          value={statsCardsData[3].value}
+          change={statsCardsData[3].change}
+          trend={statsCardsData[3].trend  as "up" | "down" | "neutral"}
           icon={Activity}
           animationsEnabled={animationsEnabled}
         />

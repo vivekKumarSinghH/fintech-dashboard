@@ -1,9 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Menu, Moon, Sun, Bell, User, Settings, HelpCircle, LogOut, Activity } from "lucide-react"
-import type { Page } from "@/types"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Menu,
+  Moon,
+  Sun,
+  Bell,
+  User,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Activity,
+} from "lucide-react";
+import type { Page } from "@/types";
 
 export function Header({
   onMenuClick,
@@ -13,14 +23,14 @@ export function Header({
   animationsEnabled,
   onToggleAnimations,
 }: {
-  onMenuClick: () => void
-  currentPage: Page
-  theme?: string
-  onToggleColorMode: () => void
-  animationsEnabled: boolean
-  onToggleAnimations: () => void
+  onMenuClick: () => void;
+  currentPage: Page;
+  theme?: string;
+  onToggleColorMode: () => void;
+  animationsEnabled: boolean;
+  onToggleAnimations: () => void;
 }) {
-  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
     <header className="border-b border-border p-4 flex justify-between items-center shadow-sm bg-card">
@@ -33,8 +43,12 @@ export function Header({
           <Menu className="h-5 w-5" />
         </button>
         <div>
-          <h2 className="text-xl font-bold font-outfit">{getPageTitle(currentPage)}</h2>
-          <p className="text-sm text-muted-foreground hidden sm:block">Welcome back to your financial dashboard</p>
+          <h2 className="text-xl font-bold font-outfit">
+            {getPageTitle(currentPage)}
+          </h2>
+          <p className="text-sm text-muted-foreground hidden sm:block">
+            Welcome back to your financial dashboard
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-2">
@@ -44,21 +58,32 @@ export function Header({
           aria-label={`${animationsEnabled ? "Disable" : "Enable"} animations`}
           title={`${animationsEnabled ? "Disable" : "Enable"} animations`}
         >
-          {animationsEnabled ? <Activity className="h-5 w-5" /> : <Activity className="h-5 w-5 opacity-50" />}
+          {animationsEnabled ? (
+            <Activity className="h-5 w-5" />
+          ) : (
+            <Activity className="h-5 w-5 opacity-50" />
+          )}
         </button>
         <button
           className="p-2 rounded-md hover:bg-secondary transition-transform hover:rotate-12"
           onClick={onToggleColorMode}
           aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
         >
-          {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          {theme === "light" ? (
+            <Moon className="h-5 w-5" />
+          ) : (
+            <Sun className="h-5 w-5" />
+          )}
         </button>
         <button className="p-2 rounded-md hover:bg-secondary relative">
           <Bell className="h-5 w-5" />
           <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full"></span>
         </button>
         <div className="relative">
-          <button className="p-2 rounded-md hover:bg-secondary" onClick={() => setShowUserMenu(!showUserMenu)}>
+          <button
+            className="p-2 rounded-md hover:bg-secondary"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+          >
             <User className="h-5 w-5" />
           </button>
 
@@ -75,7 +100,9 @@ export function Header({
                 <div className="p-2">
                   <div className="px-4 py-3 border-b border-border">
                     <p className="text-sm font-medium">John Doe</p>
-                    <p className="text-xs text-muted-foreground">admin@example.com</p>
+                    <p className="text-xs text-muted-foreground">
+                      admin@example.com
+                    </p>
                   </div>
                   <div className="py-1">
                     <button className="flex w-full items-center px-4 py-2 text-sm hover:bg-secondary rounded-md">
@@ -104,19 +131,28 @@ export function Header({
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 // ===== PAGE TITLE HELPER =====
 function getPageTitle(page: Page): string {
   switch (page) {
     case "dashboard":
-      return "Dashboard"
+      return "Dashboard";
     case "transactions":
-      return "Transactions"
+      return "Transactions";
     case "user-management":
-      return "User Management"
+      return "User Management";
     case "settings":
-      return "Settings"
+      return "Settings";
+    case "stocks":
+      return "Stocks";
+    case "stocks-assets":
+      return "Stocks-Assets";
+    case "api-management":
+      return "API Management";
+
+    default:
+      return "Unknown Page";
   }
 }

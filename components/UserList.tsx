@@ -1,47 +1,92 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-
-const users = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "admin", status: "active" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user", status: "active" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "user", status: "inactive" },
-  { id: 4, name: "Alice Brown", email: "alice@example.com", role: "manager", status: "active" },
-  { id: 5, name: "Charlie Davis", email: "charlie@example.com", role: "user", status: "pending" },
-]
+import { userData } from "@/lib/data"
+import { EyeIcon, EditIcon, TrashIcon, MoreHorizontalIcon, KeyIcon } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function UserList() {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
+          <TableHead>User</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Last Login</TableHead>
+          <TableHead>Location</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
+        {userData.slice(0, 10).map((user) => (
           <TableRow key={user.id}>
-            <TableCell>{user.name}</TableCell>
-            <TableCell>{user.email}</TableCell>
-            <TableCell>{user.role}</TableCell>
+            <TableCell>
+              <div className="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarImage src={`/abstract-geometric-shapes.png?height=32&width=32&query=${user.name}`} />
+                  <AvatarFallback>
+                    {user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-medium">{user.name}</div>
+                  <div className="text-xs text-muted-foreground">{user.email}</div>
+                </div>
+              </div>
+            </TableCell>
+            <TableCell className="capitalize">{user.role}</TableCell>
             <TableCell>
               <Badge
                 variant={user.status === "active" ? "success" : user.status === "inactive" ? "secondary" : "warning"}
+                className="capitalize"
               >
                 {user.status}
               </Badge>
             </TableCell>
+            <TableCell>{user.lastLogin}</TableCell>
+            <TableCell>{user.location}</TableCell>
             <TableCell>
-              <Button variant="ghost" size="sm">
-                Edit
-              </Button>
-              <Button variant="ghost" size="sm" className="text-red-500">
-                Delete
-              </Button>
+              <div className="flex items-center space-x-1">
+                <Button variant="ghost" size="icon" title="View User">
+                  <EyeIcon className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" title="Edit User">
+                  <EditIcon className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontalIcon className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <KeyIcon className="h-4 w-4 mr-2" />
+                      Reset Password
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>Suspend Account</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      Delete Account
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </TableCell>
           </TableRow>
         ))}

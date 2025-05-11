@@ -188,10 +188,10 @@ export default function DashboardLayoutWrapper({
 
 // Helper function to determine current page from path
 function getPageFromPath(path: string): Page {
+  if (path.startsWith("/stocks-assets")) return "stocks-assets"
   if (path.startsWith("/transactions")) return "transactions"
   if (path.startsWith("/user-management")) return "user-management"
   if (path.startsWith("/stocks")) return "stocks"
-  if (path.startsWith("/stocks-assets")) return "stocks-assets"
   if (path.startsWith("/api-management")) return "api-management"
   if (path.startsWith("/settings")) return "settings"
   return "dashboard" // Default to dashboard

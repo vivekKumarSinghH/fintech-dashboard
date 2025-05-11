@@ -1,149 +1,240 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import type { Metadata } from "next"
+import { AssetAllocation } from "@/components/AssetAllocation"
+import { StockList } from "@/components/StockList"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PlusIcon, DownloadIcon, RefreshCwIcon } from "lucide-react"
 
-export default function StocksLoading() {
+export const metadata: Metadata = {
+  title: "Stocks & Assets",
+  description: "Manage your investment portfolio",
+}
+
+export default function StocksAssetsPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <Skeleton className="h-10 w-32" />
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-28" />
-          <Skeleton className="h-10 w-28" />
+    <div className="flex flex-col gap-4 md:gap-8 p-4 md:p-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Stocks & Assets</h2>
+          <p className="text-muted-foreground">Manage your investment portfolio and track performance</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <RefreshCwIcon className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+          <Button variant="outline" size="sm">
+            <DownloadIcon className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+          <Button size="sm">
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Add Asset
+          </Button>
         </div>
       </div>
 
-      {/* Market Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array(4)
-          .fill(0)
-          .map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-4 w-16" />
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="stocks">Stocks</TabsTrigger>
+          <TabsTrigger value="crypto">Crypto</TabsTrigger>
+          <TabsTrigger value="other">Other Assets</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">$1,245,678.90</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">+$12,234.56 (2.3%)</span> from last month
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Today's Change</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-500">+$5,678.90</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">+0.45%</span> since market open
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Annual Return</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+12.8%</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">+3.2%</span> above market average
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <AssetAllocation />
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Your recent investment activities</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Bought AAPL</p>
+                      <p className="text-xs text-muted-foreground">10 shares at $182.63</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$1,826.30</p>
+                      <p className="text-xs text-muted-foreground">Jun 18, 2023</p>
+                    </div>
                   </div>
-                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Sold TSLA</p>
+                      <p className="text-xs text-muted-foreground">5 shares at $248.50</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$1,242.50</p>
+                      <p className="text-xs text-muted-foreground">Jun 17, 2023</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Dividend Payment</p>
+                      <p className="text-xs text-muted-foreground">MSFT Quarterly Dividend</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$125.75</p>
+                      <p className="text-xs text-muted-foreground">Jun 15, 2023</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Bought NVDA</p>
+                      <p className="text-xs text-muted-foreground">3 shares at $419.38</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$1,258.14</p>
+                      <p className="text-xs text-muted-foreground">Jun 14, 2023</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-      </div>
-
-      {/* Stock List */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-4 w-60" />
-            </div>
-            <div className="flex gap-2 w-full md:w-auto">
-              <Skeleton className="h-10 flex-1 md:w-64" />
-              <Skeleton className="h-10 w-10" />
-            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">
-                    <Skeleton className="h-4 w-16" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-4 w-24" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-16 ml-auto" />
-                  </TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
-                        <Skeleton className="h-4 w-12" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-32" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-4 w-16 ml-auto" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-8 w-8 rounded-md" />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Market News */}
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {Array(3)
-              .fill(0)
-              .map((_, i) => (
-                <div key={i} className="p-4 border rounded-md space-y-2">
-                  <Skeleton className="h-5 w-3/4" />
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-16" />
+        </TabsContent>
+        <TabsContent value="stocks" className="space-y-4">
+          <StockList />
+        </TabsContent>
+        <TabsContent value="crypto" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cryptocurrency Holdings</CardTitle>
+              <CardDescription>Your cryptocurrency portfolio</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-orange-500 mr-3 flex items-center justify-center text-white font-bold">
+                      ₿
+                    </div>
+                    <div>
+                      <p className="font-medium">Bitcoin</p>
+                      <p className="text-xs text-muted-foreground">BTC</p>
+                    </div>
                   </div>
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-4/5" />
+                  <div className="text-right">
+                    <p className="font-medium">0.85 BTC</p>
+                    <p className="text-xs text-muted-foreground">$25,432.50</p>
+                  </div>
                 </div>
-              ))}
-          </div>
-        </CardContent>
-      </Card>
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold">
+                      Ξ
+                    </div>
+                    <div>
+                      <p className="font-medium">Ethereum</p>
+                      <p className="text-xs text-muted-foreground">ETH</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">4.2 ETH</p>
+                    <p className="text-xs text-muted-foreground">$8,764.20</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-green-500 mr-3 flex items-center justify-center text-white font-bold">
+                      S
+                    </div>
+                    <div>
+                      <p className="font-medium">Solana</p>
+                      <p className="text-xs text-muted-foreground">SOL</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">25 SOL</p>
+                    <p className="text-xs text-muted-foreground">$1,875.00</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="other" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Other Assets</CardTitle>
+              <CardDescription>Real estate, commodities, and other investments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div>
+                    <p className="font-medium">Real Estate</p>
+                    <p className="text-xs text-muted-foreground">2 properties</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$750,000.00</p>
+                    <p className="text-xs text-green-500">+5.2% YTD</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div>
+                    <p className="font-medium">Gold</p>
+                    <p className="text-xs text-muted-foreground">10 oz</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$19,875.00</p>
+                    <p className="text-xs text-green-500">+2.8% YTD</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Art Collection</p>
+                    <p className="text-xs text-muted-foreground">5 pieces</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$125,000.00</p>
+                    <p className="text-xs text-green-500">+1.5% YTD</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
