@@ -1,33 +1,21 @@
-"use client"
+import type { Metadata } from "next";
+import { AssetAllocation } from "@/components/AssetAllocation";
+import { StockList } from "@/components/StockList";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusIcon, DownloadIcon, RefreshCwIcon } from "lucide-react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PieChart, DollarSign, TrendingUp, Briefcase, Download, Plus } from "lucide-react"
-import type { AssetData, PortfolioSummary } from "@/types"
-import { StatsCard } from "@/components/dashboard/stats-card"
-import { ExportDataModal } from "@/components/modals/export-data-modal"
-import { useToast } from "@/hooks/use-toast"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { AddAssetModal } from "@/components/modals/add-asset-modal"
-
-// Mock data
-const assetAllocation: AssetData[] = [
-  { name: "Stocks", value: 45, color: "#4f46e5" },
-  { name: "Bonds", value: 25, color: "#0ea5e9" },
-  { name: "Cash", value: 15, color: "#10b981" },
-  { name: "Real Estate", value: 10, color: "#f59e0b" },
-  { name: "Crypto", value: 5, color: "#ef4444" },
-]
-
-const portfolioSummary: PortfolioSummary = {
-  totalValue: 1250000,
-  totalChange: 125000,
-  totalChangePercent: 11.1,
-  dayChange: 2500,
-  dayChangePercent: 0.2,
-}
+export const metadata: Metadata = {
+  title: "Stocks & Assets",
+  description: "Manage your investment portfolio",
+};
 
 const performanceData = [
   { month: "Jan", value: 100 },
@@ -42,209 +30,156 @@ const performanceData = [
   { month: "Oct", value: 180 },
   { month: "Nov", value: 195 },
   { month: "Dec", value: 210 },
-]
+];
 
 export default function StocksAssetsPage() {
-  const [activeTab, setActiveTab] = useState("overview")
-  const [addAssetOpen, setAddAssetOpen] = useState(false)
-  const [exportOpen, setExportOpen] = useState(false)
-  // Get animationsEnabled from localStorage to maintain consistency
-  const [animationsEnabled] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("animationsEnabled")
-      return saved !== null ? saved === "true" : true
-    }
-    return true
-  })
-  const { toast } = useToast()
-
-  const handleRefresh = () => {
-    toast({
-      title: "Refreshing Data",
-      description: "Portfolio data is being updated",
-      duration: 2000,
-    })
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Assets & Portfolio</h1>
-        <div className="flex gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={() => setExportOpen(true)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Export portfolio data</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={() => setAddAssetOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Asset
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add a new asset to your portfolio</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+    <div className="flex flex-col gap-4 md:gap-8 p-4 md:p-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Stocks & Assets</h2>
+          <p className="text-muted-foreground">
+            Manage your investment portfolio and track performance
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <RefreshCwIcon className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+          <Button variant="outline" size="sm">
+            <DownloadIcon className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+          <Button size="sm">
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Add Asset
+          </Button>
         </div>
       </div>
 
-      {/* Portfolio Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Total Portfolio Value"
-          value={`$${portfolioSummary.totalValue.toLocaleString()}`}
-          change="11.1% from last year"
-          trend="up"
-          icon={Briefcase}
-          animationsEnabled={animationsEnabled}
-        />
-        <StatsCard
-          title="Total Return"
-          value={`$${portfolioSummary.totalChange.toLocaleString()}`}
-          change={`${portfolioSummary.totalChangePercent}% from initial investment`}
-          trend="up"
-          icon={TrendingUp}
-          animationsEnabled={animationsEnabled}
-        />
-        <StatsCard
-          title="Day Change"
-          value={`$${portfolioSummary.dayChange.toLocaleString()}`}
-          change={`${portfolioSummary.dayChangePercent}% today`}
-          trend="up"
-          icon={DollarSign}
-          animationsEnabled={animationsEnabled}
-        />
-        <StatsCard
-          title="Asset Classes"
-          value={assetAllocation.length.toString()}
-          change="Diversified portfolio"
-          trend="neutral"
-          icon={PieChart}
-          animationsEnabled={animationsEnabled}
-        />
-      </div>
-
-      {/* Main Content */}
-      <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="allocation">Asset Allocation</TabsTrigger>
+          <TabsTrigger value="stocks">Stocks</TabsTrigger>
+          <TabsTrigger value="crypto">Crypto</TabsTrigger>
+          <TabsTrigger value="other">Other Assets</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
-
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
-              <CardHeader>
-                <CardTitle>Asset Allocation</CardTitle>
-                <CardDescription>Your current asset distribution</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Portfolio Value
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80 flex items-center justify-center">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <svg width="100%" height="100%" viewBox="0 0 200 200">
-                      <g transform="translate(100, 100)">
-                        {assetAllocation.map((asset, i) => {
-                          const startAngle =
-                            i > 0
-                              ? (assetAllocation.slice(0, i).reduce((sum, a) => sum + a.value, 0) / 100) * Math.PI * 2
-                              : 0
-                          const endAngle =
-                            (assetAllocation.slice(0, i + 1).reduce((sum, a) => sum + a.value, 0) / 100) * Math.PI * 2
-
-                          const x1 = Math.sin(startAngle) * 80
-                          const y1 = -Math.cos(startAngle) * 80
-                          const x2 = Math.sin(endAngle) * 80
-                          const y2 = -Math.cos(endAngle) * 80
-
-                          const largeArcFlag = endAngle - startAngle > Math.PI ? 1 : 0
-
-                          return (
-                            <path
-                              key={i}
-                              d={`M 0 0 L ${x1} ${y1} A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2} Z`}
-                              fill={asset.color}
-                              stroke="white"
-                              strokeWidth="1"
-                            />
-                          )
-                        })}
-                      </g>
-                    </svg>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  {assetAllocation.map((asset, i) => (
-                    <div key={i} className="flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></div>
-                      <span className="text-sm">
-                        {asset.name}: {asset.value}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <div className="text-2xl font-bold">$1,245,678.90</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">
+                    +$12,234.56 (2.3%)
+                  </span>{" "}
+                  from last month
+                </p>
               </CardContent>
             </Card>
-
             <Card>
-              <CardHeader>
-                <CardTitle>Portfolio Performance</CardTitle>
-                <CardDescription>Year-to-date performance</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Today's Change
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
-                  <div className="w-full h-full flex flex-col">
-                    <div className="flex-1 relative">
-                      <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="none">
-                        <path
-                          d={`M 0 ${300 - (performanceData[0].value / 210) * 280} ${performanceData
-                            .map((d, i) => {
-                              const x = (i / (performanceData.length - 1)) * 500
-                              const y = 300 - (d.value / 210) * 280
-                              return `L ${x} ${y}`
-                            })
-                            .join(" ")}`}
-                          fill="none"
-                          stroke="#4f46e5"
-                          strokeWidth="3"
-                        />
-                        <path
-                          d={`M 0 ${300 - (performanceData[0].value / 210) * 280} ${performanceData
-                            .map((d, i) => {
-                              const x = (i / (performanceData.length - 1)) * 500
-                              const y = 300 - (d.value / 210) * 280
-                              return `L ${x} ${y}`
-                            })
-                            .join(" ")} L 500 300 L 0 300 Z`}
-                          fill="url(#gradient)"
-                          fillOpacity="0.2"
-                        />
-                        <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.8" />
-                            <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
+                <div className="text-2xl font-bold text-green-500">
+                  +$5,678.90
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">+0.45%</span>{" "}
+                  since market open
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Annual Return
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+12.8%</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-500 font-medium">+3.2%</span>{" "}
+                  above market average
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <AssetAllocation />
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>
+                  Your recent investment activities
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Bought AAPL</p>
+                      <p className="text-xs text-muted-foreground">
+                        10 shares at $182.63
+                      </p>
                     </div>
-                    <div className="h-6 flex justify-between">
-                      {performanceData.map(
-                        (d, i) =>
-                          i % 2 === 0 && (
-                            <div key={i} className="text-xs text-muted-foreground">
-                              {d.month}
-                            </div>
-                          ),
-                      )}
+                    <div className="text-right">
+                      <p className="font-medium">$1,826.30</p>
+                      <p className="text-xs text-muted-foreground">
+                        Jun 18, 2023
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Sold TSLA</p>
+                      <p className="text-xs text-muted-foreground">
+                        5 shares at $248.50
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$1,242.50</p>
+                      <p className="text-xs text-muted-foreground">
+                        Jun 17, 2023
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <div>
+                      <p className="font-medium">Dividend Payment</p>
+                      <p className="text-xs text-muted-foreground">
+                        MSFT Quarterly Dividend
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$125.75</p>
+                      <p className="text-xs text-muted-foreground">
+                        Jun 15, 2023
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Bought NVDA</p>
+                      <p className="text-xs text-muted-foreground">
+                        3 shares at $419.38
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$1,258.14</p>
+                      <p className="text-xs text-muted-foreground">
+                        Jun 14, 2023
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -252,111 +187,208 @@ export default function StocksAssetsPage() {
             </Card>
           </div>
         </TabsContent>
-
-        <TabsContent value="allocation" className="space-y-4">
+        <TabsContent value="stocks" className="space-y-4">
+          <StockList />
+        </TabsContent>
+        <TabsContent value="crypto" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Detailed Asset Allocation</CardTitle>
-              <CardDescription>Breakdown of your investment portfolio</CardDescription>
+              <CardTitle>Cryptocurrency Holdings</CardTitle>
+              <CardDescription>Your cryptocurrency portfolio</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-8">
-                {assetAllocation.map((asset, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></div>
-                        <span className="font-medium">{asset.name}</span>
-                      </div>
-                      <span className="font-medium">{asset.value}%</span>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-orange-500 mr-3 flex items-center justify-center text-white font-bold">
+                      ₿
                     </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${asset.value}%`,
-                          backgroundColor: asset.color,
-                        }}
-                      ></div>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      ${((portfolioSummary.totalValue * asset.value) / 100).toLocaleString()}
+                    <div>
+                      <p className="font-medium">Bitcoin</p>
+                      <p className="text-xs text-muted-foreground">BTC</p>
                     </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <p className="font-medium">0.85 BTC</p>
+                    <p className="text-xs text-muted-foreground">$25,432.50</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold">
+                      Ξ
+                    </div>
+                    <div>
+                      <p className="font-medium">Ethereum</p>
+                      <p className="text-xs text-muted-foreground">ETH</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">4.2 ETH</p>
+                    <p className="text-xs text-muted-foreground">$8,764.20</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-green-500 mr-3 flex items-center justify-center text-white font-bold">
+                      S
+                    </div>
+                    <div>
+                      <p className="font-medium">Solana</p>
+                      <p className="text-xs text-muted-foreground">SOL</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">25 SOL</p>
+                    <p className="text-xs text-muted-foreground">$1,875.00</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
+        <TabsContent value="other" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Other Assets</CardTitle>
+              <CardDescription>
+                Real estate, commodities, and other investments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div>
+                    <p className="font-medium">Real Estate</p>
+                    <p className="text-xs text-muted-foreground">
+                      2 properties
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$750,000.00</p>
+                    <p className="text-xs text-green-500">+5.2% YTD</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div>
+                    <p className="font-medium">Gold</p>
+                    <p className="text-xs text-muted-foreground">10 oz</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$19,875.00</p>
+                    <p className="text-xs text-green-500">+2.8% YTD</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Art Collection</p>
+                    <p className="text-xs text-muted-foreground">5 pieces</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">$125,000.00</p>
+                    <p className="text-xs text-green-500">+1.5% YTD</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="performance" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Historical Performance</CardTitle>
-              <CardDescription>Track your portfolio's performance over time</CardDescription>
+              <CardDescription>
+                Track your portfolio's performance over time
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-96">
-                <div className="w-full h-full flex flex-col">
-                  <div className="flex-1 relative">
-                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="none">
-                      <path
-                        d={`M 0 ${300 - (performanceData[0].value / 210) * 280} ${performanceData
-                          .map((d, i) => {
-                            const x = (i / (performanceData.length - 1)) * 500
-                            const y = 300 - (d.value / 210) * 280
-                            return `L ${x} ${y}`
-                          })
-                          .join(" ")}`}
-                        fill="none"
-                        stroke="#4f46e5"
-                        strokeWidth="3"
-                      />
-                      <path
-                        d={`M 0 ${300 - (performanceData[0].value / 210) * 280} ${performanceData
-                          .map((d, i) => {
-                            const x = (i / (performanceData.length - 1)) * 500
-                            const y = 300 - (d.value / 210) * 280
-                            return `L ${x} ${y}`
-                          })
-                          .join(" ")} L 500 300 L 0 300 Z`}
-                        fill="url(#gradient)"
-                        fillOpacity="0.2"
-                      />
-                      <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.8" />
-                          <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </div>
-                  <div className="h-6 flex justify-between">
-                    {performanceData.map((d, i) => (
+              <div className="w-full aspect-[5/3]">
+                <svg
+                  className="w-full h-full"
+                  viewBox="0 0 500 300"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <path
+                    d={`M 0 ${
+                      300 - (performanceData[0].value / 210) * 280
+                    } ${performanceData
+                      .map((d, i) => {
+                        const x = (i / (performanceData.length - 1)) * 500;
+                        const y = 300 - (d.value / 210) * 280;
+                        return `L ${x} ${y}`;
+                      })
+                      .join(" ")}`}
+                    fill="none"
+                    stroke="#4f46e5"
+                    strokeWidth="3"
+                  />
+                  <path
+                    d={`M 0 ${
+                      300 - (performanceData[0].value / 210) * 280
+                    } ${performanceData
+                      .map((d, i) => {
+                        const x = (i / (performanceData.length - 1)) * 500;
+                        const y = 300 - (d.value / 210) * 280;
+                        return `L ${x} ${y}`;
+                      })
+                      .join(" ")} L 500 300 L 0 300 Z`}
+                    fill="url(#gradient)"
+                    fillOpacity="0.2"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div className="h-6 flex justify-between">
+                {performanceData.map(
+                  (d, i) =>
+                    i % 2 === 0 && (
                       <div key={i} className="text-xs text-muted-foreground">
                         {d.month}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    )
+                )}
               </div>
+
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
                   <CardContent className="p-4">
-                    <div className="text-sm text-muted-foreground">1 Year Return</div>
-                    <div className="text-xl font-bold mt-1 text-green-600">+21.0%</div>
+                    <div className="text-sm text-muted-foreground">
+                      1 Year Return
+                    </div>
+                    <div className="text-xl font-bold mt-1 text-green-600">
+                      +21.0%
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4">
-                    <div className="text-sm text-muted-foreground">3 Year Return</div>
-                    <div className="text-xl font-bold mt-1 text-green-600">+45.5%</div>
+                    <div className="text-sm text-muted-foreground">
+                      3 Year Return
+                    </div>
+                    <div className="text-xl font-bold mt-1 text-green-600">
+                      +45.5%
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4">
-                    <div className="text-sm text-muted-foreground">5 Year Return</div>
-                    <div className="text-xl font-bold mt-1 text-green-600">+72.3%</div>
+                    <div className="text-sm text-muted-foreground">
+                      5 Year Return
+                    </div>
+                    <div className="text-xl font-bold mt-1 text-green-600">
+                      +72.3%
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -364,10 +396,6 @@ export default function StocksAssetsPage() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Modals */}
-      <AddAssetModal open={addAssetOpen} onOpenChange={setAddAssetOpen} />
-      <ExportDataModal open={exportOpen} onOpenChange={setExportOpen} dataType="assets" />
     </div>
-  )
+  );
 }
