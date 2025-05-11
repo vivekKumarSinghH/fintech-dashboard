@@ -1,12 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-
-const stocks = [
-  { symbol: "AAPL", name: "Apple Inc.", price: 150.25, change: 2.5 },
-  { symbol: "GOOGL", name: "Alphabet Inc.", price: 2750.8, change: -0.8 },
-  { symbol: "MSFT", name: "Microsoft Corporation", price: 305.15, change: 1.2 },
-  { symbol: "AMZN", name: "Amazon.com, Inc.", price: 3380.5, change: -1.5 },
-  { symbol: "TSLA", name: "Tesla, Inc.", price: 725.6, change: 3.7 },
-]
+import { stockData } from "@/lib/data"
 
 export function StockList() {
   return (
@@ -17,18 +10,24 @@ export function StockList() {
           <TableHead>Name</TableHead>
           <TableHead>Price</TableHead>
           <TableHead>Change</TableHead>
+          <TableHead>Volume</TableHead>
+          <TableHead>Market Cap</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {stocks.map((stock) => (
+        {stockData.map((stock) => (
           <TableRow key={stock.symbol}>
             <TableCell className="font-medium">{stock.symbol}</TableCell>
             <TableCell>{stock.name}</TableCell>
             <TableCell>${stock.price.toFixed(2)}</TableCell>
             <TableCell className={stock.change > 0 ? "text-green-600" : "text-red-600"}>
-              {stock.change > 0 ? "+" : ""}
-              {stock.change}%
+              <div className="flex items-center">
+                {stock.change > 0 ? "+" : ""}
+                {stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
+              </div>
             </TableCell>
+            <TableCell>{(stock.volume / 1000000).toFixed(1)}M</TableCell>
+            <TableCell>{stock.marketCap}</TableCell>
           </TableRow>
         ))}
       </TableBody>

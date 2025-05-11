@@ -7,13 +7,22 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { Transaction } from "@/types"
+import { RecentTransactions } from "@/components/dashboard/recent-transactions"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
-  const animationsEnabled = true
+  // Get animationsEnabled from localStorage to maintain consistency
+  const [animationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("animationsEnabled")
+      return saved !== null ? saved === "true" : true
+    }
+    return true
+  })
 
   // Sample transaction data
   const allTransactions: Transaction[] = [
@@ -215,6 +224,17 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
+      </Card>
+
+      {/* Recent Transactions Summary */}
+      <Card className="border-border bg-card mt-6">
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Your most recent transactions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RecentTransactions animationsEnabled={animationsEnabled} />
+        </CardContent>
       </Card>
     </div>
   )

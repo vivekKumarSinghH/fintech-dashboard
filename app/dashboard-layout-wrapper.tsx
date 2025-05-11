@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useCallback, Suspense, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Home, DollarSign, Users, Settings } from "lucide-react"
+import { Home, DollarSign, Users, Settings, LineChart, PieChart, Key, CreditCard } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Header } from "@/components/layout/header"
@@ -27,7 +27,6 @@ export default function DashboardLayoutWrapper({
 }) {
   // State management
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(true)
 
@@ -36,22 +35,56 @@ export default function DashboardLayoutWrapper({
   const currentPage = getPageFromPath(pathname)
 
   // Menu items for sidebar
-  const menuItems: MenuItem[] = [
-    { icon: Home, label: "Dashboard", page: "dashboard" as Page, href: "/" },
-    { icon: DollarSign, label: "Transactions", page: "transactions" as Page, href: "/transactions" },
-    { icon: Users, label: "User Management", page: "user-management" as Page, href: "/user-management" },
-    { icon: Settings, label: "Settings", page: "settings" as Page, href: "/settings" },
+   const menuItems: MenuItem[] = [
+    {
+      icon: Home,
+      label: "Dashboard",
+      page: "dashboard",
+      href: "/",
+    },
+    {
+      icon: CreditCard,
+      label: "Transactions",
+      page: "transactions",
+      href: "/transactions",
+    },
+    {
+      icon: LineChart,
+      label: "Stocks",
+      page: "stocks",
+      href: "/stocks",
+    },
+    {
+      icon: PieChart,
+      label: "Assets",
+      page: "stocks-assets",
+      href: "/stocks-assets",
+    },
+    {
+      icon: Key,
+      label: "API Management",
+      page: "api-management",
+      href: "/api-management",
+    },
+    {
+      icon: Users,
+      label: "User Management",
+      page: "user-management",
+      href: "/user-management",
+    },
+    {
+      icon: Settings,
+      label: "Settings",
+      page: "settings",
+      href: "/settings",
+    },
   ]
 
   // Handle page navigation
   const navigateTo = useCallback((page: Page) => {
     setIsMobileMenuOpen(false)
 
-    // Simulate page loading
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 500)
+  
   }, [])
 
   // Use the theme context
@@ -64,17 +97,10 @@ export default function DashboardLayoutWrapper({
 
   // Toggle animations
   const toggleAnimations = useCallback(() => {
-    setAnimationsEnabled((prev) => !prev)
-  }, [])
-
-  // Effect to handle initial loading
-  useEffect(() => {
-    // Simulate initial loading
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 800)
-  }, [])
+    const newValue = !animationsEnabled
+    setAnimationsEnabled(newValue)
+    localStorage.setItem("animationsEnabled", String(newValue))
+  }, [animationsEnabled])
 
   return (
     <div className="h-screen flex overflow-hidden">
@@ -93,10 +119,9 @@ export default function DashboardLayoutWrapper({
         {isMobileMenuOpen && (
           <motion.div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            initial={{ opacity: 0 }}
+            initial={animationsEnabled ? { opacity: 0 } : { opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
           />
         )}
       </AnimatePresence>
@@ -106,7 +131,7 @@ export default function DashboardLayoutWrapper({
         {isMobileMenuOpen && (
           <motion.div
             className="fixed inset-y-0 left-0 z-50 w-64 md:hidden"
-            initial={{ x: -280 }}
+            initial={animationsEnabled ? { x: -280 } : { x: 0 }}
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
@@ -140,9 +165,7 @@ export default function DashboardLayoutWrapper({
             animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            {isLoading ? (
-              <LoadingSpinner />
-            ) : error ? (
+            { error ? (
               <div className="p-6 rounded-lg border border-destructive bg-destructive/10 text-destructive">
                 <h3 className="text-lg font-semibold mb-2">Error</h3>
                 <p>{error}</p>
@@ -165,8 +188,11 @@ export default function DashboardLayoutWrapper({
 
 // Helper function to determine current page from path
 function getPageFromPath(path: string): Page {
+  if (path.startsWith("/stocks-assets")) return "stocks-assets"
   if (path.startsWith("/transactions")) return "transactions"
   if (path.startsWith("/user-management")) return "user-management"
+  if (path.startsWith("/stocks")) return "stocks"
+  if (path.startsWith("/api-management")) return "api-management"
   if (path.startsWith("/settings")) return "settings"
   return "dashboard" // Default to dashboard
 }
