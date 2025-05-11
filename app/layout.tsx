@@ -4,6 +4,8 @@ import { Inter, Outfit, Poppins } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 import DashboardLayoutWrapper from "./dashboard-layout-wrapper"
+import { Toaster } from "@/components/ui/toaster"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 // Font definitions
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -34,7 +36,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${outfit.variable} ${poppins.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <DashboardLayoutWrapper>{children}</DashboardLayoutWrapper>
+          <TooltipProvider>
+            <DashboardLayoutWrapper>{children}</DashboardLayoutWrapper>
+            <Toaster />
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

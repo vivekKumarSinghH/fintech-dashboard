@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, RefreshCw, Star, Filter } from "lucide-react"
+import { Search, TrendingUp, TrendingDown, RefreshCw, Star, Filter } from "lucide-react"
 import type { StockData } from "@/types"
 import { motion } from "framer-motion"
+import { StatsCard } from "@/components/dashboard/stats-card"
+import { UserActivity } from "@/components/dashboard/user-activity"
 
 // Mock data
 const stocks: StockData[] = [
@@ -115,10 +117,10 @@ const stocks: StockData[] = [
 ]
 
 const marketIndices = [
-  { name: "S&P 500", value: "4,136.25", change: "+0.83%", trend: "up" },
-  { name: "Dow Jones", value: "33,762.76", change: "+0.50%", trend: "up" },
-  { name: "Nasdaq", value: "13,240.77", change: "+1.28%", trend: "up" },
-  { name: "Russell 2000", value: "1,922.45", change: "-0.14%", trend: "down" },
+  { name: "S&P 500", value: "4,136.25", change: "+0.83%", trend: "up" as const },
+  { name: "Dow Jones", value: "33,762.76", change: "+0.50%", trend: "up" as const },
+  { name: "Nasdaq", value: "13,240.77", change: "+1.28%", trend: "up" as const },
+  { name: "Russell 2000", value: "1,922.45", change: "-0.14%", trend: "down" as const },
 ]
 
 export default function StocksPage() {
@@ -157,46 +159,15 @@ export default function StocksPage() {
       {/* Market Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {marketIndices.map((index, i) => (
-          <motion.div
+          <StatsCard
             key={index.name}
-            initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-            animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-            transition={{ duration: 0.3, delay: i * 0.1 }}
-          >
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{index.name}</p>
-                    <h3 className="text-2xl font-bold mt-1">{index.value}</h3>
-                    <p
-                      className={`text-sm font-medium flex items-center mt-1 ${
-                        index.trend === "up" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {index.trend === "up" ? (
-                        <ArrowUpRight className="h-4 w-4 mr-1" />
-                      ) : (
-                        <ArrowDownRight className="h-4 w-4 mr-1" />
-                      )}
-                      {index.change}
-                    </p>
-                  </div>
-                  <div
-                    className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                      index.trend === "up" ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"
-                    }`}
-                  >
-                    {index.trend === "up" ? (
-                      <TrendingUp className={`h-5 w-5 text-green-600`} />
-                    ) : (
-                      <TrendingDown className={`h-5 w-5 text-red-600`} />
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            title={index.name}
+            value={index.value}
+            change={index.change}
+            trend={index.trend}
+            icon={index.trend === "up" ? TrendingUp : TrendingDown}
+            animationsEnabled={animationsEnabled}
+          />
         ))}
       </div>
 
@@ -340,6 +311,28 @@ export default function StocksPage() {
             View All News
           </Button>
         </CardFooter>
+      </Card>
+
+      {/* Market Activity */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Market Activity</CardTitle>
+          <CardDescription>Trading volume and activity over time</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserActivity
+            animationsEnabled={animationsEnabled}
+            data={[
+              { date: "2023-10-22", logins: 1200, transactions: 850, apiCalls: 5000 },
+              { date: "2023-10-23", logins: 1300, transactions: 920, apiCalls: 5200 },
+              { date: "2023-10-24", logins: 1250, transactions: 880, apiCalls: 5100 },
+              { date: "2023-10-25", logins: 1400, transactions: 950, apiCalls: 5300 },
+              { date: "2023-10-26", logins: 1500, transactions: 1020, apiCalls: 5500 },
+              { date: "2023-10-27", logins: 1450, transactions: 980, apiCalls: 5400 },
+              { date: "2023-10-28", logins: 1350, transactions: 900, apiCalls: 5200 },
+            ]}
+          />
+        </CardContent>
       </Card>
     </div>
   )

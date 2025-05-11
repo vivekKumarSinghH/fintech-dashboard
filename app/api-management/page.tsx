@@ -20,9 +20,15 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Download,
 } from "lucide-react"
 import type { APIKeyData, APIUsageData } from "@/types"
 import { motion } from "framer-motion"
+import { StatsCard } from "@/components/dashboard/stats-card"
+import { CreateAPIKeyModal } from "@/components/modals/create-api-key-modal"
+import { ExportDataModal } from "@/components/modals/export-data-modal"
+import { useToast } from "@/hooks/use-toast"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 // Mock data
 const apiKeys: APIKeyData[] = [
@@ -66,8 +72,11 @@ const apiUsage: APIUsageData[] = [
 ]
 
 export default function APIManagementPage() {
+  const { toast } = useToast()
   const [activeTab, setActiveTab] = useState("keys")
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
+  const [createKeyOpen, setCreateKeyOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   // Get animationsEnabled from localStorage to maintain consistency
   const [animationsEnabled] = useState(() => {
     if (typeof window !== "undefined") {
@@ -88,11 +97,53 @@ export default function APIManagementPage() {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        alert("API key copied to clipboard!")
+        toast({
+          title: "Copied to Clipboard",
+          description: "API key has been copied to clipboard",
+          duration: 2000,
+        })
       })
       .catch((err) => {
         console.error("Failed to copy: ", err)
+        toast({
+          title: "Failed to Copy",
+          description: "Could not copy API key to clipboard",
+          variant: "destructive",
+          duration: 2000,
+        })
       })
+  }
+
+  const handleRotateKey = (keyId: string) => {
+    toast({
+      title: "Key Rotation Initiated",
+      description: "Your API key is being rotated. This may take a moment.",
+      duration: 2000,
+    })
+  }
+
+  const handleRevokeKey = (keyId: string) => {
+    toast({
+      title: "Key Revoked",
+      description: "Your API key has been revoked and is no longer active.",
+      duration: 2000,
+    })
+  }
+
+  const handleRefresh = () => {
+    toast({
+      title: "Refreshing Data",
+      description: "API usage data is being updated",
+      duration: 2000,
+    })
+  }
+
+  const handleSaveSettings = () => {
+    toast({
+      title: "Settings Saved",
+      description: "Your API settings have been updated successfully",
+      duration: 2000,
+    })
   }
 
   return (
@@ -100,95 +151,65 @@ export default function APIManagementPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-3xl font-bold">API Management</h1>
         <div className="flex gap-2">
-          <Button variant="outline">Documentation</Button>
-          <Button>Create New API Key</Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => window.open("#", "_blank")}>
+                  Documentation
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>View API documentation</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setCreateKeyOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New API Key
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Generate a new API key</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
       {/* API Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total API Keys</p>
-                  <h3 className="text-2xl font-bold mt-1">{apiKeys.length}</h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Key className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Daily Requests</p>
-                  <h3 className="text-2xl font-bold mt-1">{apiUsage[apiUsage.length - 1].requests.toLocaleString()}</h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <BarChart className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Error Rate</p>
-                  <h3 className="text-2xl font-bold mt-1">
-                    {((apiUsage[apiUsage.length - 1].errors / apiUsage[apiUsage.length - 1].requests) * 100).toFixed(2)}
-                    %
-                  </h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-amber-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Avg. Latency</p>
-                  <h3 className="text-2xl font-bold mt-1">{apiUsage[apiUsage.length - 1].latency} ms</h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <StatsCard
+          title="Total API Keys"
+          value={apiKeys.length.toString()}
+          change="Manage your keys"
+          trend="neutral"
+          icon={Key}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Daily Requests"
+          value={apiUsage[apiUsage.length - 1].requests.toLocaleString()}
+          change={`${(((apiUsage[apiUsage.length - 1].requests - apiUsage[apiUsage.length - 2].requests) / apiUsage[apiUsage.length - 2].requests) * 100).toFixed(1)}% from yesterday`}
+          trend="up"
+          icon={BarChart}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Error Rate"
+          value={`${((apiUsage[apiUsage.length - 1].errors / apiUsage[apiUsage.length - 1].requests) * 100).toFixed(2)}%`}
+          change={`${apiUsage[apiUsage.length - 1].errors} errors today`}
+          trend={apiUsage[apiUsage.length - 1].errors > 10 ? "down" : "up"}
+          icon={AlertTriangle}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Avg. Latency"
+          value={`${apiUsage[apiUsage.length - 1].latency} ms`}
+          change={`${apiUsage[apiUsage.length - 1].latency < apiUsage[apiUsage.length - 2].latency ? "Decreased" : "Increased"} from yesterday`}
+          trend={apiUsage[apiUsage.length - 1].latency < apiUsage[apiUsage.length - 2].latency ? "up" : "down"}
+          icon={Clock}
+          animationsEnabled={animationsEnabled}
+        />
       </div>
 
       {/* Main Content */}
@@ -201,9 +222,22 @@ export default function APIManagementPage() {
 
         <TabsContent value="keys" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Your API Keys</CardTitle>
-              <CardDescription>Manage your API keys for authentication</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Your API Keys</CardTitle>
+                <CardDescription>Manage your API keys for authentication</CardDescription>
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Export API keys</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -229,22 +263,41 @@ export default function APIManagementPage() {
                                 {showKeys[apiKey.id]
                                   ? apiKey.key
                                   : apiKey.key.substring(0, 10) + "••••••••••••••••••••"}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="ml-2 h-6 w-6 p-0"
-                                  onClick={() => toggleKeyVisibility(apiKey.id)}
-                                >
-                                  {showKeys[apiKey.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="ml-1 h-6 w-6 p-0"
-                                  onClick={() => copyToClipboard(apiKey.key)}
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="ml-2 h-6 w-6 p-0"
+                                        onClick={() => toggleKeyVisibility(apiKey.id)}
+                                      >
+                                        {showKeys[apiKey.id] ? (
+                                          <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                          <Eye className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{showKeys[apiKey.id] ? "Hide key" : "Show key"}</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="ml-1 h-6 w-6 p-0"
+                                        onClick={() => copyToClipboard(apiKey.key)}
+                                      >
+                                        <Copy className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Copy to clipboard</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                             </div>
                             <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
@@ -253,13 +306,28 @@ export default function APIManagementPage() {
                             </div>
                           </div>
                           <div className="flex gap-2 self-end md:self-center">
-                            <Button variant="outline" size="sm">
-                              <RefreshCw className="h-4 w-4 mr-2" />
-                              Rotate
-                            </Button>
-                            <Button variant="destructive" size="sm">
-                              Revoke
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="outline" size="sm" onClick={() => handleRotateKey(apiKey.id)}>
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Rotate
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Generate a new key and deprecate this one</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="destructive" size="sm" onClick={() => handleRevokeKey(apiKey.id)}>
+                                    Revoke
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Permanently disable this API key</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </div>
                       </CardContent>
@@ -269,7 +337,7 @@ export default function APIManagementPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">
+              <Button className="w-full" onClick={() => setCreateKeyOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create New API Key
               </Button>
@@ -279,9 +347,36 @@ export default function APIManagementPage() {
 
         <TabsContent value="usage" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>API Usage Analytics</CardTitle>
-              <CardDescription>Monitor your API usage and performance</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>API Usage Analytics</CardTitle>
+                <CardDescription>Monitor your API usage and performance</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="sm" onClick={handleRefresh}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Refresh usage data</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Export
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Export usage data</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -457,11 +552,17 @@ export default function APIManagementPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Save Settings</Button>
+              <Button className="w-full" onClick={handleSaveSettings}>
+                Save Settings
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <CreateAPIKeyModal open={createKeyOpen} onOpenChange={setCreateKeyOpen} />
+      <ExportDataModal open={exportOpen} onOpenChange={setExportOpen} dataType="api" />
     </div>
   )
 }

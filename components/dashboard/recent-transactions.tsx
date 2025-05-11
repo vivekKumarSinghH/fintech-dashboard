@@ -3,8 +3,17 @@ import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import type { Transaction } from "@/types"
 
-export function RecentTransactions({ animationsEnabled = true }: { animationsEnabled?: boolean }) {
-  const transactions: Transaction[] = [
+export function RecentTransactions({
+  animationsEnabled = true,
+  transactions,
+  limit = 5,
+}: {
+  animationsEnabled?: boolean
+  transactions?: Transaction[]
+  limit?: number
+}) {
+  // Use provided transactions or fallback to default data
+  const displayTransactions: Transaction[] = transactions || [
     {
       id: "1",
       amount: "+$350",
@@ -52,9 +61,12 @@ export function RecentTransactions({ animationsEnabled = true }: { animationsEna
     },
   ]
 
+  // Limit the number of transactions to display
+  const limitedTransactions = displayTransactions.slice(0, limit)
+
   return (
     <div className="space-y-4">
-      {transactions.map((transaction, index) => (
+      {limitedTransactions.map((transaction, index) => (
         <motion.div
           key={transaction.id}
           className="flex items-center p-2 rounded-lg transition-colors hover:bg-secondary"

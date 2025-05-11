@@ -122,7 +122,6 @@ export default function DashboardLayoutWrapper({
             initial={animationsEnabled ? { opacity: 0 } : { opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={toggleMobileMenu}
           />
         )}
       </AnimatePresence>

@@ -4,9 +4,13 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PieChart, ArrowUpRight, DollarSign, TrendingUp, Briefcase } from "lucide-react"
+import { PieChart, DollarSign, TrendingUp, Briefcase, Download, Plus } from "lucide-react"
 import type { AssetData, PortfolioSummary } from "@/types"
-import { motion } from "framer-motion"
+import { StatsCard } from "@/components/dashboard/stats-card"
+import { ExportDataModal } from "@/components/modals/export-data-modal"
+import { useToast } from "@/hooks/use-toast"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { AddAssetModal } from "@/components/modals/add-asset-modal"
 
 // Mock data
 const assetAllocation: AssetData[] = [
@@ -42,6 +46,8 @@ const performanceData = [
 
 export default function StocksAssetsPage() {
   const [activeTab, setActiveTab] = useState("overview")
+  const [addAssetOpen, setAddAssetOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   // Get animationsEnabled from localStorage to maintain consistency
   const [animationsEnabled] = useState(() => {
     if (typeof window !== "undefined") {
@@ -50,106 +56,81 @@ export default function StocksAssetsPage() {
     }
     return true
   })
+  const { toast } = useToast()
+
+  const handleRefresh = () => {
+    toast({
+      title: "Refreshing Data",
+      description: "Portfolio data is being updated",
+      duration: 2000,
+    })
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-3xl font-bold">Assets & Portfolio</h1>
         <div className="flex gap-2">
-          <Button variant="outline">Export</Button>
-          <Button>Add Asset</Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => setExportOpen(true)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Export portfolio data</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setAddAssetOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Asset
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add a new asset to your portfolio</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
       {/* Portfolio Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Portfolio Value</p>
-                  <h3 className="text-2xl font-bold mt-1">${portfolioSummary.totalValue.toLocaleString()}</h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Briefcase className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Return</p>
-                  <h3 className="text-2xl font-bold mt-1">${portfolioSummary.totalChange.toLocaleString()}</h3>
-                  <p className="text-sm font-medium text-green-600 flex items-center mt-1">
-                    <ArrowUpRight className="h-4 w-4 mr-1" />
-                    {portfolioSummary.totalChangePercent}%
-                  </p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Day Change</p>
-                  <h3 className="text-2xl font-bold mt-1">${portfolioSummary.dayChange.toLocaleString()}</h3>
-                  <p className="text-sm font-medium text-green-600 flex items-center mt-1">
-                    <ArrowUpRight className="h-4 w-4 mr-1" />
-                    {portfolioSummary.dayChangePercent}%
-                  </p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={animationsEnabled ? { opacity: 0, y: 20 } : false}
-          animate={animationsEnabled ? { opacity: 1, y: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Asset Classes</p>
-                  <h3 className="text-2xl font-bold mt-1">{assetAllocation.length}</h3>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <PieChart className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <StatsCard
+          title="Total Portfolio Value"
+          value={`$${portfolioSummary.totalValue.toLocaleString()}`}
+          change="11.1% from last year"
+          trend="up"
+          icon={Briefcase}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Total Return"
+          value={`$${portfolioSummary.totalChange.toLocaleString()}`}
+          change={`${portfolioSummary.totalChangePercent}% from initial investment`}
+          trend="up"
+          icon={TrendingUp}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Day Change"
+          value={`$${portfolioSummary.dayChange.toLocaleString()}`}
+          change={`${portfolioSummary.dayChangePercent}% today`}
+          trend="up"
+          icon={DollarSign}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Asset Classes"
+          value={assetAllocation.length.toString()}
+          change="Diversified portfolio"
+          trend="neutral"
+          icon={PieChart}
+          animationsEnabled={animationsEnabled}
+        />
       </div>
 
       {/* Main Content */}
@@ -383,6 +364,10 @@ export default function StocksAssetsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <AddAssetModal open={addAssetOpen} onOpenChange={setAddAssetOpen} />
+      <ExportDataModal open={exportOpen} onOpenChange={setExportOpen} dataType="assets" />
     </div>
   )
 }

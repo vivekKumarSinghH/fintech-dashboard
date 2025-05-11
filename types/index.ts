@@ -35,6 +35,7 @@ export type ActivityData = {
   logins: number
   transactions: number
   apiCalls: number
+  [key: string]: string | number // Allow for additional metrics
 }
 
 export type OverviewData = {

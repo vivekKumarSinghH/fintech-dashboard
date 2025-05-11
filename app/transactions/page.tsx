@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { Transaction } from "@/types"
+import { RecentTransactions } from "@/components/dashboard/recent-transactions"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -222,6 +224,17 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
+      </Card>
+
+      {/* Recent Transactions Summary */}
+      <Card className="border-border bg-card mt-6">
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Your most recent transactions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RecentTransactions animationsEnabled={animationsEnabled} />
+        </CardContent>
       </Card>
     </div>
   )
