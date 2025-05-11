@@ -2,8 +2,15 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import type { ActivityData } from "@/types"
 
-export function UserActivity({ animationsEnabled = true }: { animationsEnabled?: boolean }) {
-  const data: ActivityData[] = [
+export function UserActivity({
+  animationsEnabled = true,
+  data,
+}: {
+  animationsEnabled?: boolean
+  data?: ActivityData[]
+}) {
+  // Use provided data or fallback to default data
+  const activityData: ActivityData[] = data || [
     { date: "2023-05-01", logins: 200, transactions: 150, apiCalls: 1000 },
     { date: "2023-05-02", logins: 220, transactions: 160, apiCalls: 1100 },
     { date: "2023-05-03", logins: 240, transactions: 180, apiCalls: 1200 },
@@ -15,7 +22,7 @@ export function UserActivity({ animationsEnabled = true }: { animationsEnabled?:
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data}>
+      <LineChart data={activityData}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} />
         <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} />

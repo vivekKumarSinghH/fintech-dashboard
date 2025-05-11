@@ -3,17 +3,26 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Search, UserPlus, Edit, Lock, Trash2 } from "lucide-react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { UserData } from "@/types"
+import { StatsCard } from "@/components/dashboard/stats-card"
+import { Users, UserCheck, Shield } from "lucide-react"
 
 export default function UserManagementPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterRole, setFilterRole] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
-  const animationsEnabled = true
+  // Get animationsEnabled from localStorage to maintain consistency
+  const [animationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("animationsEnabled")
+      return saved !== null ? saved === "true" : true
+    }
+    return true
+  })
 
   // Sample user data
   const allUsers: UserData[] = [
@@ -91,45 +100,38 @@ export default function UserManagementPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle>Total Users</CardTitle>
-            <CardDescription>All registered users</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{allUsers.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle>Active Users</CardTitle>
-            <CardDescription>Currently active users</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{allUsers.filter((user) => user.status === "active").length}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle>Admins</CardTitle>
-            <CardDescription>Users with admin privileges</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{allUsers.filter((user) => user.role === "admin").length}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle>New Users</CardTitle>
-            <CardDescription>Users added this month</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">3</div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Total Users"
+          value={allUsers.length.toString()}
+          change="All registered users"
+          trend="neutral"
+          icon={Users}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Active Users"
+          value={allUsers.filter((user) => user.status === "active").length.toString()}
+          change={`${((allUsers.filter((user) => user.status === "active").length / allUsers.length) * 100).toFixed(0)}% of total users`}
+          trend="up"
+          icon={UserCheck}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="Admins"
+          value={allUsers.filter((user) => user.role === "admin").length.toString()}
+          change="Users with admin privileges"
+          trend="neutral"
+          icon={Shield}
+          animationsEnabled={animationsEnabled}
+        />
+        <StatsCard
+          title="New Users"
+          value="3"
+          change="Added this month"
+          trend="up"
+          icon={UserPlus}
+          animationsEnabled={animationsEnabled}
+        />
       </div>
 
       <Card className="border-border bg-card">

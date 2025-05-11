@@ -1,6 +1,13 @@
 import type React from "react"
 // Type definitions
-export type Page = "dashboard" | "transactions" | "user-management" | "settings"
+export type Page =
+  | "dashboard"
+  | "transactions"
+  | "user-management"
+  | "settings"
+  | "stocks"
+  | "stocks-assets"
+  | "api-management"
 export type ColorMode = "light" | "dark"
 export type AnimationsEnabled = boolean
 
@@ -8,6 +15,7 @@ export type MenuItem = {
   icon: React.ElementType
   label: string
   page: Page
+  href?: string
 }
 
 export type Transaction = {
@@ -27,6 +35,7 @@ export type ActivityData = {
   logins: number
   transactions: number
   apiCalls: number
+  [key: string]: string | number // Allow for additional metrics
 }
 
 export type OverviewData = {
@@ -37,6 +46,36 @@ export type OverviewData = {
 export type AssetData = {
   name: string
   value: number
+  change?: number
+  color?: string
+}
+
+export type StockData = {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  changePercent: number
+  volume: number
+  marketCap: string
+  sector: string
+}
+
+export type APIKeyData = {
+  id: string
+  name: string
+  key: string
+  created: string
+  lastUsed: string
+  status: string
+  permissions: string[]
+}
+
+export type APIUsageData = {
+  date: string
+  requests: number
+  errors: number
+  latency: number
 }
 
 export type UserData = {
@@ -107,4 +146,12 @@ export type KPIData = {
   change: string
   trend: "up" | "down" | "neutral"
   icon: React.ElementType
+}
+
+export type PortfolioSummary = {
+  totalValue: number
+  totalChange: number
+  totalChangePercent: number
+  dayChange: number
+  dayChangePercent: number
 }

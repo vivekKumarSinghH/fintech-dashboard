@@ -8,7 +8,14 @@ import type { ProfileData, NotificationSetting, SecuritySetting } from "@/types"
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile")
-  const animationsEnabled = true
+  // Get animationsEnabled from localStorage to maintain consistency
+  const [animationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("animationsEnabled")
+      return saved !== null ? saved === "true" : true
+    }
+    return true
+  })
 
   // Sample profile data
   const profileData: ProfileData = {
